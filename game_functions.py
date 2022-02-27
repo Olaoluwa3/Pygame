@@ -1,6 +1,7 @@
+from os import _AddedDllDirectory
 import sys
-import pygame
 from time import sleep
+import pygame
 from bullet import Bullet
 from alien import Alien
 
@@ -128,6 +129,16 @@ def create_fleet(ai_settings, screen, ship, aliens):
         for alien_number in range(number_aliens_x):
             create_alien(ai_settings, screen, aliens, alien_number, row_number)
 
+def check_aliens_bottom(ai_settings, stats, screen, ship, aliens, bullets):
+    """Check if any aliens have reached the bottom of the screen."""
+    screen_rect = screen.get_rect()
+    for alien in aliens.sprites():
+        if alien.rect.bottom >= screen_rect.bottom:
+            #Treat this the same as if the ship got hit
+            ship_hit(ai_settings, stats, screen, ship, aliens, bullets)
+            break
+
+
 def update_aliens(ai_settings, stats, screen, ship, aliens, bullets):
     """ Check if the fleet is at an edge, and then update the postions of all aliens in the fleet."""
     check_fleet_edges(ai_settings, aliens)
@@ -136,6 +147,9 @@ def update_aliens(ai_settings, stats, screen, ship, aliens, bullets):
     #Look for alien-ship collisions.
     if pygame.sprite.spritecollideany(ship, aliens):
         ship_hit(ai_settings, stats, screen, ship, aliens, bullets)
+
+    #Look for aliens hitting the bottom of the screen
+    check_aliens_bottom(ai_settings, stats, screen, ship, aliens, bullets)
 
 
 
@@ -154,10 +168,11 @@ def change_fleet_direction(ai_settings, aliens):
         alien.rect.y += ai_settings.fleet_drop_speed
     ai_settings.fleet_direction *= -1
 
+
 def ship_hit(ai_settings, stats, screen, ship, aliens, bullets):
     """Respond to ship being hit by alien."""
     #Decrement ships left.
-    stats.ship_left -= 1
+    stats.ships_left -= 1
 
     #Empty the list of aliens and bullets.
     aliens.empty()
@@ -169,6 +184,10 @@ def ship_hit(ai_settings, stats, screen, ship, aliens, bullets):
 
     #Pause.
     sleep(0.5)
+
+
+
+
 
 
 
