@@ -1,4 +1,4 @@
-from os import _AddedDllDirectory
+
 import sys
 from time import sleep
 import pygame
